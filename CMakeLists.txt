@@ -1,0 +1,32 @@
+cmake_minimum_required(VERSION 2.6)
+
+project(cmake-with-git-metadata)
+
+execute_process(
+  COMMAND git rev-parse --abbrev-ref HEAD
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_BRANCH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+execute_process(
+  COMMAND git log -1 --format=%h
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_COMMIT_HASH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+message(STATUS "Git current branch: ${GIT_BRANCH}")
+message(STATUS "Git commit hash: ${GIT_COMMIT_HASH}")
+
+message(STATUS "Generating version.h")
+
+configure_file(
+  ${CMAKE_SOURCE_DIR}/include/version.h.in
+  ${CMAKE_BINARY_DIR}/generated/version.h
+)
+
+include_directories(${CMAKE_BINARY_DIR}/generated)
+include_directories(${CMAKE_SOURCE_DIR}/include)
+
+add_subdirectory(src)
